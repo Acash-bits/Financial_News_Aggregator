@@ -7,7 +7,7 @@ mysql-connector-python==8.2.0
 lxml==4.9.3
 
 # Optional: For improved HTTP handling
-urllib3==2.1.0
+urllib3==2.5.0
 
 # Optional: For environment variable management
 python-dotenv==1.0.0
