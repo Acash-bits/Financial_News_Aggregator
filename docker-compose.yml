@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: financial_news_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root1234}
+      MYSQL_DATABASE: lks_company
+      MYSQL_USER: scraper_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-scraper1234}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    networks:
+      - scraper_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # News Scraper Service
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: financial_news_scraper
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_USER: scraper_user
+      DB_PASSWORD: ${MYSQL_PASSWORD:-scraper1234}
+      DB_NAME: lks_company
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.office365.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SENDER_EMAIL: ${SENDER_EMAIL}
+      SENDER_PASSWORD: ${SENDER_PASSWORD}
+    volumes:
+      - ./logs:/app/logs
+      - ./config.py:/app/config.py
+    networks:
+      - scraper_network
+    command: python Ipo_tracker.py
+
+  # Email Agent Service (runs separately)
+  email_agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: financial_news_email_agent
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_USER: scraper_user
+      DB_PASSWORD: ${MYSQL_PASSWORD:-scraper1234}
+      DB_NAME: lks_company
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.office365.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SENDER_EMAIL: ${SENDER_EMAIL}
+      SENDER_PASSWORD: ${SENDER_PASSWORD}
+    volumes:
+      - ./logs:/app/logs
+      - ./config.py:/app/config.py
+    networks:
+      - scraper_network
+    # Run email agent every 2 hours using cron simulation
+    command: >
+      sh -c "while true; do
+        python mail_sending_agent.py;
+        echo 'Email check complete. Waiting 2 hours...';
+        sleep 7200;
+      done"
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  scraper_network:
+    driver: bridge
