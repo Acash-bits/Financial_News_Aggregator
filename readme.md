@@ -227,13 +227,14 @@ CREATE TABLE IPO_Scraped_Articles (
 ## ⚙️ Configuration
 
 ### Database Configuration (`Ipo_tracker.py`)
+Change the values in the .env file
 
 ```python
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'your_password',  # Change this
-    'database': 'financial_news_aggregator',
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('MYSQL_ROOT_PASSWORD'),  # or MYSQL_PASSWORD
+    'database': os.getenv('DB_NAME'),
     'autocommit': False,
     'use_unicode': True,
     'charset': 'utf8mb4'
@@ -241,14 +242,14 @@ db_config = {
 ```
 
 ### Email Configuration (`mail_sending_agent.py`)
-
+Change the values in .env file
 ```python
-sender_email = "your_email@company.com"
-recipient_emails = ["recipient1@company.com"]
-cc_emails = ["cc1@company.com", "cc2@company.com"]
+sender_email = os.getenv('SENDER_EMAIL')
+recipient_emails = os.getenv('RECIPIENT_EMAILS') 
+cc_emails = os.getenv('CC_EMAILS')
 
 # SMTP Credentials
-server.login("your_email@company.com", "your_password")
+server.login(os.getenv('SENDER_EMAIL'),os.getenv('SENDER_PASSWORD'))
 ```
 
 ### Scraping Interval
@@ -256,7 +257,7 @@ server.login("your_email@company.com", "your_password")
 Modify the wait time between scraping cycles:
 
 ```python
-wait_minutes = 90  # Default: 90 minutes
+wait_minutes = os.getenv('SCRAPE_INTERVAL_MINUTES')  # Default: 90 minutes
 ```
 
 ---
