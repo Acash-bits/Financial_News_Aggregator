@@ -62,9 +62,9 @@ if new_articles:
     """
     
     # Email setup
-    sender_email = os.getenv() # Enter the email id of the person from whom you want to send the email
-    recipient_emails = ["xyz.23423@abc.com"] #Enter the email id of recipient on which you want the mail should be sent 
-    cc_emails = ["qwerty.uiop@abc.com"] # Enter the email id of recipient whom you want to keep them in CC
+    sender_email = os.getenv('SENDER_EMAIL') # Enter the email id of the person from whom you want to send the email
+    recipient_emails = os.getenv('RECIPIENT_EMAILS') #Enter the email id of recipient on which you want the mail should be sent 
+    cc_emails = os.getenv('CC_EMAILS') # Enter the email id of recipient whom you want to keep them in CC
     
     subject = "IPO & M&A News"
     
@@ -79,9 +79,9 @@ if new_articles:
     try:
         # Send the email
         print("Sending email...")
-        with smtplib.SMTP("smtp.office365.com", 587) as server:
+        with smtplib.SMTP(os.getenv('SMTP_SERVER'), os.getenv('SMTP_PORT')) as server:
             server.starttls()
-            server.login("xyz.1234@abc.com", ",mail_password")
+            server.login(os.getenv('SENDER_EMAIL'),os.getenv('SENDER_PASSWORD'))
             server.sendmail(sender_email, recipient_emails + cc_emails, msg.as_string())
         print("Email sent successfully.")
         
