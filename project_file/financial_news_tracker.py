@@ -9,6 +9,9 @@ import sys
 import re
 from typing import Set, List, Dict, Tuple, Optional
 import hashlib
+from dotenv import load_dotenv
+import os
+
 
 class NewsArticleScraper:
     def __init__(self, db_config: dict):
@@ -596,22 +599,21 @@ class NewsArticleScraper:
             self.db.close()
             print("Database connection closed.")
 
+load_dotenv()
 
 def main():
     """Main function to run the scraper continuously."""
     
     # Database configuration
     db_config = {
-        'host': 'localhost',
-        'user': 'your_username', #Enter your username here
-        'password': 'your_password', #Enter your password here
-        'database': 'financial_news',
+        'host': os.getenv('DB_HOST'),
+        'user': os.getenv('DB_USER'),
+        'password': os.getenv('MYSQL_ROOT_PASSWORD'),  # or MYSQL_PASSWORD
+        'database': os.getenv('DB_NAME'),
         'autocommit': False,
         'use_unicode': True,
         'charset': 'utf8mb4'
     }
-
-    # Initialize scraper
     scraper = NewsArticleScraper(db_config)
 
     print("Enhanced News Scraper initialized. Starting in 5 seconds...")
@@ -621,7 +623,7 @@ def main():
         while True:
             scraper.run_scraper()
             
-            wait_minutes = 90
+            wait_minutes = os.getenv('SCRAPE_INTERVAL_MINUTES')
             print(f"\nWaiting {wait_minutes} minutes before next run...")
             time.sleep(wait_minutes * 60)
             
