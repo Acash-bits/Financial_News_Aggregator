@@ -12,8 +12,12 @@ load_dotenv()
 warnings.filterwarnings('ignore')
 
 class NewsScraperAnalytics:
+
+
     def __init__(self, db_config: dict):
         """Initialize analytics with database configuration."""
+        self.save_images = False
+        self.generated_figures = [] 
         self.db_config = db_config
         self.db = None
         self.df = None
@@ -90,7 +94,8 @@ class NewsScraperAnalytics:
         plt.title('Source Distribution (%)', fontsize=14, fontweight='bold')
                 
         plt.tight_layout()
-        plt.savefig('source_distribution.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('source_distribution.png', fig))
         plt.show()
         print("✓ Source distribution chart saved")
     
@@ -113,7 +118,8 @@ class NewsScraperAnalytics:
         plt.title('Keyword Distribution (%)', fontsize=14, fontweight='bold')
         
         plt.tight_layout()
-        plt.savefig('keyword_distribution.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('keyword_distribution.png', fig))
         plt.show()
         print("✓ Keyword distribution chart saved")
     
@@ -131,7 +137,8 @@ class NewsScraperAnalytics:
         plt.xticks(rotation=45)
         
         plt.tight_layout()
-        plt.savefig('daily_trends.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('daily_trends.png', fig))
         plt.show()
         print("✓ Daily trends chart saved")
     
@@ -160,7 +167,8 @@ class NewsScraperAnalytics:
         axes[1].tick_params(axis='x', rotation=45)
         
         plt.tight_layout()
-        plt.savefig('weekly_trends.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('weekly_trends.png', fig))
         plt.show()
         print("✓ Weekly trends chart saved")
     
@@ -189,7 +197,8 @@ class NewsScraperAnalytics:
         axes[1].tick_params(axis='x', rotation=45)
         
         plt.tight_layout()
-        plt.savefig('monthly_trends.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('monthly_trends.png', fig))
         plt.show()
         print("✓ Monthly trends chart saved")
     
@@ -218,7 +227,8 @@ class NewsScraperAnalytics:
         axes[1].tick_params(axis='x', rotation=45)
         
         plt.tight_layout()
-        plt.savefig('quarterly_trends.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('quarterly_trends.png', fig))
         plt.show()
         print("✓ Quarterly trends chart saved")
     
@@ -291,7 +301,8 @@ class NewsScraperAnalytics:
         ax6.tick_params(axis='y', rotation=0, labelsize=8)
         
         plt.suptitle('News Scraper Analytics Dashboard', fontsize=16, fontweight='bold', y=0.995)
-        plt.savefig('comparison_dashboard.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('comparison_dashboard.png', fig))
         plt.show()
         print("✓ Comparison dashboard saved")
     
@@ -307,7 +318,8 @@ class NewsScraperAnalytics:
         plt.ylabel('Source', fontsize=11)
         plt.tight_layout()
         
-        plt.savefig('source_keyword_heatmap.png', dpi=300, bbox_inches='tight')
+        fig = plt.gcf()  # Get current figure
+        self.generated_figures.append(('heatmap_source_keyword.png', fig))
         plt.show()
         print("✓ Source-Keyword heatmap saved")
     
@@ -369,6 +381,31 @@ class NewsScraperAnalytics:
         if self.db and self.db.is_connected():
             self.db.close()
             print("Database connection closed.")
+
+    def save_all_figures(self):
+        """Save all generated figures after user con`firmation."""
+        if not self.generated_figures:
+            print("No figures to save.")
+            return
+        
+        while True:
+            response = input("\nDo you want to save all the generated charts as images? (yes/no): ").strip().lower()
+            if response in ['yes', 'y']:
+                print("\n💾 Saving images...")
+                for filename, fig in self.generated_figures:
+                    fig.savefig(filename, dpi=300, bbox_inches='tight')
+                    print(f"✓ Saved: {filename}")
+                print("📁 All images saved to current directory")
+                break
+            elif response in ['no', 'n']:
+                print("✓ Images not saved")
+                break
+            else:
+                print("Please enter 'yes' or 'no'")
+        
+        # Close all figures to free memory
+        for _, fig in self.generated_figures:
+            plt.close(fig)        
 
 
 def main():
