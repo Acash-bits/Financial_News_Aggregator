@@ -623,7 +623,7 @@ def main():
         while True:
             scraper.run_scraper()
             
-            wait_minutes = os.getenv('SCRAPE_INTERVAL_MINUTES')
+            wait_minutes = int(os.getenv('SCRAPE_INTERVAL_MINUTES'))
             print(f"\nWaiting {wait_minutes} minutes before next run...")
             time.sleep(wait_minutes * 60)
             
