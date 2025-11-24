@@ -374,7 +374,7 @@ class NewsScraperAnalytics:
         self.plot_comparison_dashboard()
         
         print("\n✅ All visualizations generated successfully!")
-        print("📁 Check your working directory for PNG files")
+        self.save_all_figures()
     
     def close_connection(self):
         """Close database connection."""
