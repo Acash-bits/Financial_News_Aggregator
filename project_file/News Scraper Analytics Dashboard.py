@@ -64,7 +64,7 @@ class NewsScraperAnalytics:
     
     def plot_source_distribution(self):
         """Plot overall distribution of articles by source."""
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(14, 6))
         
         source_counts = self.df['Website'].value_counts()
         
@@ -73,13 +73,22 @@ class NewsScraperAnalytics:
         plt.title('Total Articles by Source', fontsize=14, fontweight='bold')
         plt.xlabel('Source', fontsize=11)
         plt.ylabel('Number of Articles', fontsize=11)
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=45, ha='right', fontsize=9)
         plt.grid(axis='y', alpha=0.3)
         
         plt.subplot(1, 2, 2)
-        plt.pie(source_counts, labels=source_counts.index, autopct='%1.1f%%', startangle=90)
+        wedges, texts, autotexts = plt.pie(source_counts, labels=source_counts.index, 
+                                       autopct='%1.1f%%', startangle=90,
+                                       pctdistance=0.85)
+        # Adjust font sizes
+        for text in texts:
+            text.set_fontsize(9)
+        for autotext in autotexts:
+            autotext.set_fontsize(8)
+            autotext.set_color('white')
+            autotext.set_weight('bold')
         plt.title('Source Distribution (%)', fontsize=14, fontweight='bold')
-        
+                
         plt.tight_layout()
         plt.savefig('source_distribution.png', dpi=300, bbox_inches='tight')
         plt.show()
@@ -215,18 +224,18 @@ class NewsScraperAnalytics:
     
     def plot_comparison_dashboard(self):
         """Create comprehensive comparison dashboard."""
-        fig = plt.figure(figsize=(18, 12))
-        gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
+        fig = plt.figure(figsize=(20, 12))
+        gs = fig.add_gridspec(3, 3, hspace=0.35, wspace=0.35)
         
         # 1. Daily comparison
         ax1 = fig.add_subplot(gs[0, :2])
         daily_total = self.df.groupby('Scraped_Date').size()
         ax1.plot(daily_total.index, daily_total.values, marker='o', linewidth=2, markersize=3, label='Total')
-        ax1.set_title('Daily Article Count', fontsize=12, fontweight='bold')
-        ax1.set_xlabel('Date')
-        ax1.set_ylabel('Articles')
+        ax1.set_title('Daily Article Count', fontsize=12, fontweight='bold', pad= 10)
+        ax1.set_xlabel('Date', fontsize=10)
+        ax1.set_ylabel('Articles', fontsize=10)
         ax1.grid(True, alpha=0.3)
-        ax1.tick_params(axis='x', rotation=45)
+        ax1.tick_params(axis='x', rotation=45, labelsize=8)
         ax1.legend()
         
         # 2. Source totals
@@ -247,7 +256,7 @@ class NewsScraperAnalytics:
         ax3.set_title('Weekly Articles by Source', fontsize=12, fontweight='bold')
         ax3.set_xlabel('Week')
         ax3.set_ylabel('Articles')
-        ax3.legend(fontsize=8, loc='upper left')
+        ax3.legend(fontsize=7, loc='upper left', ncol=2)
         ax3.grid(True, alpha=0.3)
         
         # 4. Keyword totals
@@ -274,10 +283,12 @@ class NewsScraperAnalytics:
         # 6. Source vs Keyword heatmap
         ax6 = fig.add_subplot(gs[2, 2])
         heatmap_data = pd.crosstab(self.df['Keyword'], self.df['Website'])
-        sns.heatmap(heatmap_data, annot=True, fmt='d', cmap='YlOrRd', ax=ax6, cbar_kws={'label': 'Count'})
+        sns.heatmap(heatmap_data, annot=True, fmt='d', cmap='YlOrRd', ax=ax6, cbar_kws={'label': 'Count'}, annot_kws={'size': 8})
         ax6.set_title('Keyword vs Source', fontsize=12, fontweight='bold')
         ax6.set_xlabel('Source')
         ax6.set_ylabel('Keyword')
+        ax6.tick_params(axis='x', rotation=45, labelsize=7)
+        ax6.tick_params(axis='y', rotation=0, labelsize=8)
         
         plt.suptitle('News Scraper Analytics Dashboard', fontsize=16, fontweight='bold', y=0.995)
         plt.savefig('comparison_dashboard.png', dpi=300, bbox_inches='tight')
