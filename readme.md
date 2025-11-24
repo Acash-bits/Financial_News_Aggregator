@@ -7,6 +7,7 @@ An automated news scraping and email notification system that monitors multiple 
 - [Overview](#-overview)
 - [Features](#-features)
 - [System Architecture](#️-system-architecture)
+- [Analytics Dashboards](#-analytics-dashboards)
 - [Technical Deep Dive](#-technical-deep-dive)
 - [Installation](#-installation)
 - [Configuration](#️-configuration)
@@ -27,6 +28,8 @@ This project consists of two main components:
 
 1. **News Scraper** (`Ipo_tracker.py`) - Continuously monitors 7+ financial news websites for relevant articles
 2. **Email Agent** (`mail_sending_agent.py`) - Sends formatted email digests of newly discovered articles
+3. **Static Analytics Dashboard** (`News Scraper Analytics Dashboard.py`) - Generates comprehensive visualizations with matplotlib/seaborn
+4. **Real-time Analytics Dashboard** (`Real_time_analytics_dashboard.py`) - Interactive web-based dashboard with auto-refresh capabilities
 
 The system is designed to run 24/7, scraping news every 90 minutes and sending email notifications whenever new articles are found.
 
@@ -46,6 +49,19 @@ The system is designed to run 24/7, scraping news every 90 minutes and sending e
 - **Auto-Reconnection**: Handles database disconnections gracefully
 - **Rate Limiting**: Implements delays to respect website servers
 
+### Analytics & Visualization Features 🆕
+
+- **Dual Dashboard System**: Static and real-time analytics options
+- **Multi-Timeframe Analysis**: Daily, weekly, monthly, and quarterly trends
+- **Interactive Visualizations**: Dynamic charts with Plotly
+- **Source Performance Tracking**: Monitor which sources provide the most articles
+- **Keyword Distribution Analysis**: Understand topic coverage
+- **Heatmap Visualizations**: Cross-analysis of sources vs keywords
+- **Auto-Refresh Capability**: Real-time dashboard updates every 60 seconds
+- **Export Functionality**: Save static charts as high-resolution images
+- **Tabbed Interface**: Organized navigation for different analysis views
+
+
 ### Smart Features
 
 - **Exclusion Tracking**: Reports relevant articles that were filtered out and why
@@ -55,7 +71,7 @@ The system is designed to run 24/7, scraping news every 90 minutes and sending e
 
 ---
 
-## 🏗️ System Architecture
+## 🗃️ System Architecture
 
 ```mermaid
 graph TB
@@ -85,16 +101,153 @@ graph TB
         N --> O[Recipients]
     end
     
+    subgraph "Analytics Layer 🆕"
+        L --> P[Static Dashboard<br/>matplotlib/seaborn]
+        L --> Q[Real-time Dashboard<br/>Dash/Plotly]
+        P --> R[PNG Reports]
+        Q --> S[Web Interface<br/>:8050]
+    end
+    
     style A fill:#4A90E2,stroke:#2E5C8A,stroke-width:3px,color:#fff
     style M fill:#E24A4A,stroke:#8A2E2E,stroke-width:3px,color:#fff
     style L fill:#043015,stroke:#2E8A4F,stroke-width:3px,color:#fff
-    style H fill:#786F00,stroke:#C17D11,stroke-width:2px
-    style I fill:#786F00,stroke:#C17D11,stroke-width:2px
-    style J fill:#786F00,stroke:#C17D11,stroke-width:2px
-    style K fill:#786F00,stroke:#C17D11,stroke-width:2px
+    style P fill:#9B59B6,stroke:#6C3483,stroke-width:3px,color:#fff
+    style Q fill:#E67E22,stroke:#A04000,stroke-width:3px,color:#fff
 ```
 
 ---
+
+## 📊 Analytics Dashboards
+
+### 1. Static Analytics Dashboard (`News Scraper Analytics Dashboard.py`)
+
+A comprehensive data visualization tool using **matplotlib** and **seaborn** for in-depth historical analysis.
+
+#### Features:
+- **Source Distribution**: Bar and pie charts showing article counts per source
+- **Keyword Analysis**: Distribution of IPO, M&A, and Demerger articles
+- **Daily Trends**: Line charts tracking article frequency over time
+- **Weekly/Monthly/Quarterly Breakdown**: Grouped analysis by time periods
+- **Comparison Dashboard**: 6-panel comprehensive view with multiple metrics
+- **Heatmaps**: Cross-tabulation of sources vs keywords
+- **Summary Statistics**: Automated reporting of key metrics
+- **Image Export**: Save all charts as high-resolution PNG files (300 DPI)
+
+#### Visualization Types:
+```python
+1. plot_source_distribution()      # Bar + Pie charts
+2. plot_keyword_distribution()     # Bar + Pie charts  
+3. plot_daily_trends()             # Line chart
+4. plot_weekly_trends()            # Grouped bar charts
+5. plot_monthly_trends()           # Grouped bar charts
+6. plot_quarterly_trends()         # Grouped bar charts
+7. plot_heatmap_source_keyword()   # Heatmap
+8. plot_comparison_dashboard()     # 6-panel overview
+```
+
+#### Sample Output:
+```
+============================================================
+SUMMARY STATISTICS
+============================================================
+
+Total Articles: 1,247
+Date Range: 2025-01-01 to 2025-11-24
+Total Days: 328
+
+--- Top Sources ---
+MoneyControl       423
+Economic Times     312
+ZeeBiz            189
+Livemint          156
+...
+
+--- Keyword Distribution ---
+M&A               687
+IPO               412
+Demerger          148
+
+--- Average Articles per Day ---
+3.80
+
+--- Most Active Week ---
+2025-W42: 67 articles
+
+--- Most Active Month ---
+2025-10: 198 articles
+============================================================
+```
+
+---
+
+### 2. Real-time Analytics Dashboard (`Real_time_analytics_dashboard.py`)
+
+An **interactive web-based dashboard** built with **Dash** and **Plotly** for live monitoring.
+
+#### Key Features:
+- **Auto-Refresh**: Updates every 60 seconds automatically
+- **Live Metrics**: Real-time summary cards with key statistics
+- **Tabbed Navigation**: 6 organized tabs for different analyses
+- **Interactive Charts**: Hover, zoom, and pan capabilities
+- **Responsive Design**: Clean, modern UI with card-based layout
+- **SQLAlchemy Integration**: Efficient database connection pooling
+
+#### Dashboard Tabs:
+
+**📈 Overview Tab**
+- Source distribution (bar + donut charts)
+- Keyword distribution (bar + donut charts)
+- Side-by-side comparison views
+
+**📅 Daily Analysis Tab**
+- Daily article frequency trend line
+- Average articles per day metric
+- Interactive date-based exploration
+
+**📊 Weekly Analysis Tab**
+- Weekly trends by source (multi-line chart)
+- Weekly trends by keyword (multi-line chart)
+- Most active week highlight
+
+**📆 Monthly Analysis Tab**
+- Monthly articles by source (grouped bars)
+- Monthly articles by keyword (grouped bars)
+- Most active month metric
+
+**📋 Quarterly Analysis Tab**
+- Quarterly breakdown by source
+- Quarterly breakdown by keyword
+- Long-term trend visualization
+
+**🔥 Heatmaps Tab**
+- Keyword vs Source heatmap
+- Source vs Keyword heatmap (reversed)
+- Annotated cell values
+
+#### Summary Cards:
+```
+┌─────────────┬──────────────┬─────────────┬─────────────┬─────────────┐
+│ Total       │ Today's      │ This Week   │ This Month  │ Top Source  │
+│ Articles    │ Articles     │             │             │             │
+│ 1,247       │ 5            │ 23          │ 87          │ MoneyControl│
+│ 2025-01-01  │              │             │             │             │
+│ to          │              │             │             │             │
+│ 2025-11-24  │              │             │             │             │
+└─────────────┴──────────────┴─────────────┴─────────────┴─────────────┘
+```
+
+#### Access the Dashboard:
+```bash
+python Real_time_analytics_dashboard.py
+
+# Dashboard available at:
+# http://127.0.0.1:8050
+# or
+# http://localhost:8050
+```
+
+---
+
 
 ## 🔬 Technical Deep Dive
 
@@ -198,6 +351,32 @@ mysql --version
 
 ```bash
 pip install requests beautifulsoup4 mysql-connector-python
+
+# Analytics dependencies 🆕
+pip install pandas matplotlib seaborn numpy
+
+# Real-time dashboard dependencies 🆕
+pip install dash plotly sqlalchemy
+```
+
+Or install all at once:
+```bash
+pip install -r requirements.txt
+```
+
+### Create `requirements.txt`:
+```txt
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+mysql-connector-python>=8.0.0
+python-dotenv>=1.0.0
+pandas>=1.5.0
+matplotlib>=3.6.0
+seaborn>=0.12.0
+numpy>=1.23.0
+dash>=2.14.0
+plotly>=5.18.0
+sqlalchemy>=2.0.0
 ```
 
 ### Database Setup
@@ -305,6 +484,91 @@ crontab -e
 # Start scraper on system boot
 @reboot /usr/bin/python3 /path/to/Ipo_tracker.py
 ```
+### 3. Running Static Analytics Dashboard 🆕
+
+```bash
+python "News Scraper Analytics Dashboard.py"
+
+# Output:
+# 🎨 Generating all visualizations...
+# ------------------------------------------------------------
+# Database connection successful.
+# Loaded 1247 articles from database.
+# 
+# ============================================================
+# SUMMARY STATISTICS
+# ============================================================
+# ...
+# 
+# 📊 Creating charts...
+# ✓ Source distribution chart saved
+# ✓ Keyword distribution chart saved
+# ✓ Daily trends chart saved
+# ✓ Weekly trends chart saved
+# ✓ Monthly trends chart saved
+# ✓ Quarterly trends chart saved
+# ✓ Source-Keyword heatmap saved
+# ✓ Comparison dashboard saved
+# 
+# ✅ All visualizations generated successfully!
+# 
+# Do you want to save all the generated charts as images? (yes/no):
+```
+
+**Generated Charts:**
+- `source_distribution.png`
+- `keyword_distribution.png`
+- `daily_trends.png`
+- `weekly_trends.png`
+- `monthly_trends.png`
+- `quarterly_trends.png`
+- `heatmap_source_keyword.png`
+- `comparison_dashboard.png`
+
+### 4. Running Real-time Dashboard 🆕
+
+```bash
+python Real_time_analytics_dashboard.py
+
+# Output:
+# 🚀 Starting Enhanced Real-time Dashboard...
+# 📊 Dashboard will be available at: http://127.0.0.1:8050
+# 🔗 Database: 127.0.0.1:3306/financial_news
+# 🔄 Auto-refresh interval: 60 seconds
+# ✨ All features from Analytics Dashboard included!
+# Press Ctrl+C to stop
+# 
+# Dash is running on http://127.0.0.1:8050/
+```
+
+**Access in Browser:**
+- Local: `http://127.0.0.1:8050`
+- Network: `http://[your-ip]:8050`
+
+**Features:**
+- Auto-refreshes every 60 seconds
+- Tabbed navigation
+- Interactive charts
+- Real-time metrics
+- Responsive design
+
+---
+
+## 📊 Dashboard Comparison
+
+| Feature | Static Dashboard | Real-time Dashboard |
+|---------|-----------------|---------------------|
+| **Technology** | matplotlib/seaborn | Dash/Plotly |
+| **Update Method** | Manual run | Auto-refresh (60s) |
+| **Interactivity** | Static images | Fully interactive |
+| **Export** | PNG files | Screenshot only |
+| **Performance** | One-time generation | Continuous updates |
+| **Best For** | Reports, presentations | Monitoring, live analysis |
+| **Resource Usage** | Low | Moderate |
+| **Network Access** | Not required | Web browser required |
+| **Customization** | Code changes | Tab selection |
+
+---
 
 ---
 
@@ -400,7 +664,31 @@ Uses regex word boundaries `\b` to ensure precision:
 - ❌ "HIPOT test" → Does NOT match "IPO"
 - ✅ "Company acquired stake" → Matches "Acquired"
 
+
+### 3. Complete System Flow
+
+```mermaid
+graph TB
+    A[News Scraper<br/>Every 90 min] --> B[(MySQL DB)]
+    C[Email Agent<br/>Every 2 hours] --> B
+    D[Static Dashboard<br/>On-demand] --> B
+    E[Real-time Dashboard<br/>Continuous] --> B
+    
+    B --> F[New Articles]
+    F --> G[Email Notifications]
+    F --> H[Visual Analytics]
+    
+    H --> I[Historical Reports]
+    H --> J[Live Monitoring]
+    
+    style A fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    style B fill:#043015,stroke:#2E8A4F,stroke-width:3px,color:#fff
+    style D fill:#9B59B6,stroke:#6C3483,stroke-width:2px,color:#fff
+    style E fill:#E67E22,stroke:#A04000,stroke-width:2px,color:#fff
+```
+
 ---
+
 
 ## 🌐 Website-Specific Scraping Strategies
 
@@ -762,21 +1050,71 @@ mysql -u root -p -h localhost
 - Reduce number of websites
 - Optimize database queries
 
+### Dashboard-Specific Issues 🆕
+
+**1. Real-time Dashboard Not Loading**
+```bash
+# Check if port 8050 is in use
+netstat -ano | findstr :8050  # Windows
+lsof -i :8050                  # Linux/Mac
+
+# Change port if needed
+app.run(debug=True, host='0.0.0.0', port=8051)
+```
+
+**2. Static Dashboard - No Charts Displayed**
+```bash
+# Check matplotlib backend
+python -c "import matplotlib; print(matplotlib.get_backend())"
+
+# If issues, try different backend
+import matplotlib
+matplotlib.use('TkAgg')  # or 'Qt5Agg'
+```
+
+**3. SQLAlchemy Connection Issues**
+```bash
+# Test connection
+python -c "from sqlalchemy import create_engine; engine = create_engine('mysql+mysqlconnector://user:pass@host:port/db'); print(engine.connect())"
+```
+
+**4. Pandas Warning About mysql.connector**
+- This is expected and can be ignored
+- Or upgrade to SQLAlchemy (recommended)
+
+**5. Dashboard Shows "No Data Available"**
+- Verify database has records
+- Check `.env` configuration
+- Ensure scraper has run at least once
+
+
 ---
 
 ## 🚀 Future Enhancements
 
-- [ ] Add more news sources
-- [ ] Implement machine learning for better categorization
-- [ ] Create web dashboard for article management
-- [ ] Add Telegram/Slack notifications
-- [ ] Implement article sentiment analysis
-- [ ] Add full-text article extraction
-- [ ] Create API endpoints for external access
-- [ ] Add user preference management
-- [ ] Implement article deduplication across sources
-- [ ] Add performance monitoring dashboard
-
+### Planned Features
+- [ ] **Dashboard Improvements**
+  - [ ] Add date range filters
+  - [ ] Implement data export (CSV/Excel)
+  - [ ] Add comparison mode (year-over-year)
+  - [ ] Include sentiment analysis charts
+  - [ ] Add drill-down capabilities
+- [ ] **New Visualizations**
+  - [ ] Geographic heatmaps
+  - [ ] Network graphs (company relationships)
+  - [ ] Trend prediction models
+- [ ] **Integration Features**
+  - [ ] REST API for external access
+  - [ ] Webhook notifications
+  - [ ] Slack/Teams integration
+- [ ] **Advanced Analytics**
+  - [ ] Machine learning categorization
+  - [ ] Anomaly detection
+  - [ ] Topic modeling
+- [ ] **User Management**
+  - [ ] Multi-user authentication
+  - [ ] Personalized dashboards
+  - [ ] Custom alert rules
 ---
 
 ## 🤝 Contributing
@@ -793,7 +1131,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is proprietary software developed for internal use at.
+This project is licensed under the MIT License - see the [License](https://github.com/Acash-bits/Financial_News_Aggregator?tab=License-1-ov-file) file for details.
 
 ---
 
