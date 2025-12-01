@@ -1,6 +1,6 @@
 # IPO & M&A News Tracker 📰
 
-An automated news scraping and email notification system that monitors multiple financial news websites for IPO, M&A, and Demerger related articles. The system intelligently filters relevant content, prevents duplicates, and sends daily email digests to stakeholders.
+An automated news scraping and email notification system that monitors multiple financial news websites for IPO, M&A, and Demerger related articles. The system intelligently filters relevant content, prevents duplicates, and sends daily email digests to stakeholders.Having an interactive web-based dashboard with auto-refresh capabilities to get the visual analysis of data easily.
 
 ## 📋 Table of Contents
 
