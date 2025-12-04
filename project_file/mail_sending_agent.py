@@ -12,7 +12,7 @@ print("Connecting to the database...")
 db = mysql.connector.connect(
     host=os.getenv('DB_HOST'),
     user=os.getenv('DB_USER'), # Enter your username here
-    password=os.getenv('DB_PASSWORD'), # Eneter your password here
+    password=os.getenv('MYSQL_ROOT_PASSWORD'), # Eneter your password here
     database=os.getenv('DB_NAME')
 )
 cursor = db.cursor()
@@ -63,8 +63,8 @@ if new_articles:
     
     # Email setup
     sender_email = os.getenv('SENDER_EMAIL') # Enter the email id of the person from whom you want to send the email
-    recipient_emails = os.getenv('RECIPIENT_EMAILS') #Enter the email id of recipient on which you want the mail should be sent 
-    cc_emails = os.getenv('CC_EMAILS') # Enter the email id of recipient whom you want to keep them in CC
+    recipient_emails = os.getenv('RECIPIENT_EMAILS').split(",") #Enter the email id of recipient on which you want the mail should be sent 
+    cc_emails = os.getenv('CC_EMAILS').split(",") # Enter the email id of recipient whom you want to keep them in CC
     
     subject = "IPO & M&A News"
     
@@ -79,7 +79,7 @@ if new_articles:
     try:
         # Send the email
         print("Sending email...")
-        with smtplib.SMTP(os.getenv('SMTP_SERVER'), os.getenv('SMTP_PORT')) as server:
+        with smtplib.SMTP(os.getenv('SMTP_SERVER'), int(os.getenv('SMTP_PORT'))) as server:
             server.starttls()
             server.login(os.getenv('SENDER_EMAIL'),os.getenv('SENDER_PASSWORD'))
             server.sendmail(sender_email, recipient_emails + cc_emails, msg.as_string())
